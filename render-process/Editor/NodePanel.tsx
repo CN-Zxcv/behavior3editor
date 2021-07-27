@@ -51,7 +51,11 @@ export default class NodePanel extends React.Component<NodePanelProps> {
         };
         if (model.args) {
             for (let k in model.args) {
-                initialValues[`args.${k}`] = model.args[k];
+                if (typeof(model.args[k]) == 'object') {
+                    initialValues[`args.${k}`] = JSON.stringify(model.args[k]);
+                } else {
+                    initialValues[`args.${k}`] = model.args[k];
+                }
             }
         }
         if (model.input) {
@@ -100,6 +104,8 @@ export default class NodePanel extends React.Component<NodePanelProps> {
                 const k = "args." + e.name;
                 if (e.type.indexOf("number") > 0) {
                     args[e.name] = Number(values[k]);
+                } else if (e.type.indexOf("json") >= 0) {
+                    args[e.name] = JSON.parse(values[k]);
                 } else {
                     args[e.name] = values[k];
                 }
@@ -221,6 +227,8 @@ export default class NodePanel extends React.Component<NodePanelProps> {
                     })
                     }
                 </Select>;
+            } else if (e.type.indexOf("json") >= 0) {
+                return <Input onBlur={this.handleSubmit} placeholder={"json"}/>;
             }
         };
 
